@@ -11,38 +11,52 @@ Option Explicit
 
 Dim mvarGivenValue As Variant
 
-Public Sub to_be(expected_value, Optional custom_err_msg)
+Private Function get_matcher_fail_msg(actual_value As String, expected_value As String, expectation_suffix As String, Optional custom_err_msg) As String
+    'fail msg structure is "found|expected: suffix >value<" where suffix is something like not or greater than like in expected: not >this value<
+    Dim fail_msg As String
+    'value indention is the number of characters from the first character of value_type to the ">" sign,
+    '   eg. "found: >400<" has an indention of 7
+    Dim value_indentation As Long
+    
+    If Not IsMissing(custom_err_msg) Then
+        custom_err_msg = Trim(CStr(custom_err_msg))
+    Else
+        custom_err_msg = vbNullString
+    End If
+    value_indentation = Len(Trim("expected: " & expectation_suffix & " ") & " ")
+    'start building the fail msg
+    fail_msg = Space(4) & "failed expectation" & vbLf
+    fail_msg = fail_msg & Space(4) & "found:" & Space(value_indentation - Len("found:")) & ">" & actual_value & "<" & vbLf
+    If expectation_suffix = vbNullString Then
+        fail_msg = fail_msg & Space(4) & "expected: " & ">" & expected_value & "<"
+    Else
+        fail_msg = fail_msg & Space(4) & "expected: " & expectation_suffix & " >" & expected_value & "<"
+    End If
+    If custom_err_msg <> vbNullString Then
+        fail_msg = fail_msg & vbLf & Space(4) & custom_err_msg
+    End If
+    get_matcher_fail_msg = fail_msg
+End Function
 
+Public Sub to_be(expected_value, Optional custom_err_msg)
     Dim matcher_fail_msg As String
     
     If Not values_are_equal(Me.given_value, expected_value) Then
-        matcher_fail_msg = vbTab & "missed expectation:" & vbLf & _
-                                vbTab & "found:" & vbTab & vbTab & ">" & Me.given_value & "<" & vbLf & _
-                                vbTab & "expected:" & vbTab & "not >" & expected_value & "<"
-        If Not IsMissing(custom_err_msg) Then
-            matcher_fail_msg = matcher_fail_msg & vbLf & vbTab & custom_err_msg
-        End If
+        matcher_fail_msg = get_matcher_fail_msg(Me.given_value, CStr(expected_value), vbNullString, custom_err_msg)
         raise_expectation_err matcher_fail_msg
     End If
 End Sub
 
 Public Sub not_to_be(expected_value, Optional custom_err_msg)
-
     Dim matcher_fail_msg As String
     
     If values_are_equal(Me.given_value, expected_value) Then
-        matcher_fail_msg = vbTab & "missed expectation" & vbLf & _
-                            vbTab & "found:" & vbTab & vbTab & ">" & Me.given_value & "<" & vbLf & _
-                            vbTab & "expected:" & vbTab & "not >" & expected_value & "<"
-        If Not IsMissing(custom_err_msg) Then
-            matcher_fail_msg = matcher_fail_msg & vbLf & vbTab & custom_err_msg
-        End If
+        matcher_fail_msg = get_matcher_fail_msg(Me.given_value, CStr(expected_value), "not", custom_err_msg)
         raise_expectation_err matcher_fail_msg
     End If
 End Sub
 
 Public Sub to_be_nothing()
-
     Dim matcher_fail_msg As String
     
     If Not IsObject(Me.given_value) Then
@@ -61,7 +75,6 @@ Public Sub to_be_nothing()
 End Sub
 
 Public Sub not_to_be_nothing()
-
     Dim matcher_fail_msg As String
     
     If Not IsObject(Me.given_value) Then
@@ -80,7 +93,6 @@ Public Sub not_to_be_nothing()
 End Sub
 
 Private Sub test_comparability(pGivenValue As Variant, pExpectedValue As Variant)
-    
     Dim matcher_fail_msg As String
     
     If (IsObject(Me.given_value) And Not IsObject(pExpectedValue)) _
@@ -91,7 +103,6 @@ Private Sub test_comparability(pGivenValue As Variant, pExpectedValue As Variant
 End Sub
 
 Private Function values_are_equal(given_value As Variant, expected_value As Variant) As Boolean
-
     Dim index As Integer
     
     'basic data types (e.g. string, integer) can't be compared with objects
@@ -136,7 +147,6 @@ Public Property Let given_value(ByVal pvarGivenValue As Variant)
 End Property
 
 Public Sub contains_member(expected_member As Variant, Optional custom_err_msg)
-
     Dim matcher_fail_msg As String
     Dim expected_member_text As String
 
@@ -170,7 +180,6 @@ Public Sub contains_member(expected_member As Variant, Optional custom_err_msg)
 End Sub
 
 Public Sub includes_text(include_item As Variant, Optional custom_err_msg)
-
     Dim matcher_fail_msg As String
     
     If TypeName(include_item) = "String" Then
@@ -189,7 +198,6 @@ Public Sub includes_text(include_item As Variant, Optional custom_err_msg)
 End Sub
 
 Public Sub does_not_include(include_item As Variant)
-
     Dim matcher_fail_msg As String
     
     If TypeName(include_item) = "String" Then

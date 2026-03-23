@@ -24,6 +24,34 @@ Public Sub Given_a_variable_refers_to_INT_B6E787C91FDE(example_context As TConte
     example_context.set_value step_expressions(1), "sample_variable"
 End Sub
 
+Public Sub When_expected_and_actual_value_are_being_comp_04DEE404A552(example_context As TContext)
+    'When expected and actual value are being compared using to_be
+    Dim actual_err_msg As String
+    Dim custom_err_msg As String
+    Dim expected_val As Variant
+    Dim actual_val As Variant
+    
+    expected_val = example_context.get_value("expected_val")
+    actual_val = example_context.get_value("actual_val")
+    custom_err_msg = example_context.get_value("custom_err_msg")
+    actual_err_msg = run_comparison_expectation(actual_val, expected_val, custom_err_msg, "to_be", example_context)
+    example_context.set_value actual_err_msg, "actual_err_msg"
+End Sub
+
+Public Sub When_expected_and_actual_value_are_being_comp_7F8492096565(example_context As TContext)
+    'When expected and actual value are being compared using not_to_be
+    Dim actual_err_msg As String
+    Dim custom_err_msg As String
+    Dim expected_val As Variant
+    Dim actual_val As Variant
+    
+    expected_val = example_context.get_value("expected_val")
+    actual_val = example_context.get_value("actual_val")
+    custom_err_msg = example_context.get_value("custom_err_msg")
+    actual_err_msg = run_comparison_expectation(actual_val, expected_val, custom_err_msg, "not_to_be", example_context)
+    example_context.set_value actual_err_msg, "actual_err_msg"
+End Sub
+
 Public Sub When_the_variable_is_expected_to_be_nothing_DBE6C575C088(example_context As TContext)
     'When the variable is expected to be Nothing
     On Error GoTo expectation_failed
@@ -84,3 +112,13 @@ Public Sub Then_the_expectation_fails_DBF0F873A79F(example_context As TContext)
     TSpec.expect(expectation_result).to_be "failed"
 End Sub
 
+Public Sub Then_the_expectation_result_is_shown_as_STR_4642F94D38D6(example_context As TContext, step_expressions As Collection)
+    'And the expection result is shown as {string}
+    Dim actual_err_msg As String
+    Dim expected_err_msg As String
+    
+    'ignore tabs in msg comparison
+    actual_err_msg = example_context.get_value("actual_err_msg")
+    expected_err_msg = TSupport_assure_expectations.normalize_err_msg(CStr(step_expressions(1)))
+    TSpec.expect(actual_err_msg).to_be expected_err_msg
+End Sub

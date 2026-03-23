@@ -22,7 +22,7 @@ Ability: add custom error message for failed expectations
         | to_be           |            200 |          400 | "cell doesn't have the expected width" |
         | not_to_be       |            400 |          400 | "width is still set to default size"   |
 
-    @wip
+
     Example: text comparison expectations fail with custom error message
       Given an text was expected to include <expected_text>
         But the actual text was <actual_text>
@@ -38,7 +38,7 @@ Ability: add custom error message for failed expectations
 
     @vba-specific
     Example: has_member expectation fails with custom error message
-      # VBA offers either a built-in Array data type or Collection objects to manage lists
+    #VBA offers either a built-in Array data type or Collection objects to manage lists
 
       Given a <list_type> was used to save cell background color names "blue", "yellow" and "red"
         And a custom error message was defined as "no cell was marked as green to indicate success"
