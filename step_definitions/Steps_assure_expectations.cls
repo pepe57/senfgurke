@@ -9,19 +9,14 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Public Sub Given_a_variable_refers_to_an_object_C82E72756271(example_context As TContext)
-    'Given a variable refers to an object
-    example_context.set_value New Collection, "sample_variable"
+Public Sub Given_the_actual_value_refers_to_an_object_C17237078D18(example_context As TContext)
+    'Given the actual value refers to an object
+    example_context.set_value New Collection, "actual_val"
 End Sub
 
-Public Sub Given_a_variable_refers_to_nothing_6F7619677868(example_context As TContext)
-    'Given a variable refers to Nothing
-    example_context.set_value Nothing, "sample_variable"
-End Sub
-
-Public Sub Given_a_variable_refers_to_INT_B6E787C91FDE(example_context As TContext, step_expressions As Collection)
-    'Given a variable refers to {integer}
-    example_context.set_value step_expressions(1), "sample_variable"
+Public Sub Given_the_actual_value_refers_to_nothing_F37725446C7A(example_context As TContext)
+    'Given the actual value refers to Nothing
+    example_context.set_value Nothing, "actual_val"
 End Sub
 
 Public Sub When_expected_and_actual_value_are_being_comp_04DEE404A552(example_context As TContext)
@@ -52,17 +47,6 @@ Public Sub When_expected_and_actual_value_are_being_comp_7F8492096565(example_co
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
-Public Sub When_the_variable_is_expected_to_be_nothing_DBE6C575C088(example_context As TContext)
-    'When the variable is expected to be Nothing
-    On Error GoTo expectation_failed
-    TSpec.expect(example_context.get_value("sample_variable")).to_be_nothing
-    example_context.set_value "confirmed", "expectation_result"
-    Exit Sub
-    
-expectation_failed:
-    example_context.set_value "failed", "expectation_result"
-End Sub
-
 Public Sub When_the_nonobject_variable_is_expected_to_be_10954F3DA4DC(example_context As TContext)
     'When the non-object variable is expected to be Nothing
     On Error GoTo expectation_failed
@@ -74,26 +58,32 @@ expectation_failed:
     example_context.set_value "failed", "expectation_result"
 End Sub
 
-Public Sub When_the_variable_is_expected_not_to_be_nothi_63DB3DDBA289(example_context As TContext)
-    'When the variable is expected not to be Nothing
-    On Error GoTo expectation_failed
-    TSpec.expect(example_context.get_value("sample_variable")).not_to_be_nothing
-    example_context.set_value "confirmed", "expectation_result"
-    Exit Sub
+Public Sub When_the_actual_value_is_validated_using_to_b_CC83E48E0542(example_context As TContext)
+    'When the actual value is validated using to_be_nothing
+    Dim actual_val As Variant
+    Dim actual_err_msg As String
     
-expectation_failed:
-    example_context.set_value "failed", "expectation_result"
+    If IsObject(example_context.get_value("actual_val")) Then
+        Set actual_val = example_context.get_value("actual_val")
+    Else
+        actual_val = example_context.get_value("actual_val")
+    End If
+    actual_err_msg = run_validation_expectation(actual_val, "to_be_nothing", example_context)
+    example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
-Public Sub When_the_nonobject_variable_is_expected_not_t_A409ACACC890(example_context As TContext)
-    'When the non-object variable is expected not to be Nothing
-    On Error GoTo expectation_failed
-    TSpec.expect(example_context.get_value("sample_variable")).to_be_nothing
-    example_context.set_value "confirmed", "expectation_result"
-    Exit Sub
+Public Sub When_the_actual_value_is_validated_using_not__8C8DAF193434(example_context As TContext)
+    'When the actual value is validated using not_to_be_nothing
+    Dim actual_val As Variant
+    Dim actual_err_msg As String
     
-expectation_failed:
-    example_context.set_value "failed", "expectation_result"
+    If IsObject(example_context.get_value("actual_val")) Then
+        Set actual_val = example_context.get_value("actual_val")
+    Else
+        actual_val = example_context.get_value("actual_val")
+    End If
+    actual_err_msg = run_validation_expectation(actual_val, "not_to_be_nothing", example_context)
+    example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
 Public Sub Then_the_expectation_is_confirmed_A341C2A69D10(example_context As TContext)

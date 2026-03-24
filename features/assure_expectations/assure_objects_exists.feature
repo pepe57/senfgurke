@@ -8,36 +8,57 @@ Ability: assure objects exists
 
 
   Rule: is Nothing expectation should fail for variables assigned to an object
-
     Example: expected Nothing when object exists
-      Given a variable refers to an object
-      When the variable is expected to be Nothing
-      Then the expectation fails
+      Given the actual value refers to an object
+       When the actual value is validated using to_be_nothing
+       Then the expectation fails
+        And the expectation result is shown as
+          """
+            failed expectation
+            found an object
+            expected: >Nothing<
+          """
 
     Example: expected Nothing when object doesn't exists
-      Given a variable refers to Nothing
-      When the variable is expected to be Nothing
-      Then the expectation is confirmed
+      Given the actual value refers to Nothing
+       When the actual value is validated using to_be_nothing
+       Then the expectation is confirmed
 
-    Example: expected Nothing when value isn't an object
-      Given a variable refers to 42
-      When the non-object variable is expected to be Nothing
-      Then the expectation fails
-
+    Example: expected Nothing when the actual value isn't an object
+      Given the actual value was evaluated as 42
+       When the actual value is validated using to_be_nothing
+       Then the expectation fails
+        And the expectation result is shown as
+           """
+             failed expectation
+             found:    >42<
+             expected: >Nothing<
+           """
 
   Rule: not is Nothing expectation should confirm when a variable is assigned to an object
-
     Example: expected not Nothing when object exists
-      Given a variable refers to an object
-       When the variable is expected not to be Nothing
+      Given the actual value refers to an object
+       When the actual value is validated using not_to_be_nothing
        Then the expectation is confirmed
 
     Example: expected not Nothing when object doesn't exists
-      Given a variable refers to Nothing
-       When the variable is expected not to be Nothing
+      Given the actual value refers to Nothing
+       When the actual value is validated using not_to_be_nothing
        Then the expectation fails
+        And the expectation result is shown as
+          """
+            failed expectation
+            found:    >Nothing<
+            expected: >an object<
+          """
 
-    Example: expected Nothing when value isn't an object
-      Given a variable refers to 42
-       When the non-object variable is expected not to be Nothing
+    Example: expected Nothing when the actual value isn't an object
+      Given the actual value was evaluated as 42
+       When the actual value is validated using not_to_be_nothing
        Then the expectation fails
+        And the expectation result is shown as
+          """
+            failed expectation
+            found:    >42<
+            expected: >an object<
+          """

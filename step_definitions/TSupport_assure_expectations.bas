@@ -76,3 +76,53 @@ comparison_failed:
     Err.Clear
     Resume resume_after_failure
 End Function
+
+Public Function run_validation_expectation(actual_value As Variant, comparison_type As String, example_context As TContext, _
+                                            Optional custom_err_msg) As String
+    Dim actual_err_msg As String
+    
+    'set the actual err msg to a default value to recognice if the expectation under test caused no error at all
+    actual_err_msg = "Expected an error being raised by a missed expectation but none found so far..."
+    On Error GoTo comparison_failed
+    Select Case comparison_type
+        Case "to_be_nothing"
+            TSpec.expect(actual_value).to_be_nothing
+        Case "not_to_be_nothing"
+            TSpec.expect(actual_value).not_to_be_nothing
+    End Select
+    example_context.set_value "confirmed", "expectation_result"
+resume_after_failure:
+    On Error GoTo 0
+    run_validation_expectation = actual_err_msg
+    Exit Function
+    
+comparison_failed:
+    actual_err_msg = get_failure_msg
+    example_context.set_value "failed", "expectation_result"
+    Err.Clear
+    Resume resume_after_failure
+End Function
+
+Public Function run_collection_expectation(given_collection As Collection, expected_value As Variant, validation_type, _
+                                            example_context As TContext, Optional custom_err_msg) As String
+    Dim actual_err_msg As String
+    
+    'set the actual err msg to a default value to recognice if the expectation under test caused no error at all
+    actual_err_msg = "Expected an error being raised by a missed expectation but none found so far..."
+    On Error GoTo comparison_failed
+    Select Case validation_type
+        Case "contains_member"
+            TSpec.expect(given_collection).contains_member expected_value, custom_err_msg
+    End Select
+    example_context.set_value "confirmed", "expectation_result"
+resume_after_failure:
+    On Error GoTo 0
+    run_collection_expectation = actual_err_msg
+    Exit Function
+    
+comparison_failed:
+    actual_err_msg = get_failure_msg
+    example_context.set_value "failed", "expectation_result"
+    Err.Clear
+    Resume resume_after_failure
+End Function

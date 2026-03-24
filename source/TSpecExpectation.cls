@@ -11,8 +11,9 @@ Option Explicit
 
 Dim mvarGivenValue As Variant
 
-Private Function get_matcher_fail_msg(actual_value As String, expected_value As String, expectation_suffix As String, Optional custom_err_msg) As String
-    'fail msg structure is "found|expected: suffix >value<" where suffix is something like not or greater than like in expected: not >this value<
+Private Function get_matcher_fail_msg(actual_value As String, expected_value As String, expectation_suffix As String, _
+                                        Optional custom_err_msg, Optional found_msg) As String
+    'fail msg contains 3 lines: headline, found value and expected value
     Dim fail_msg As String
     'value indention is the number of characters from the first character of value_type to the ">" sign,
     '   eg. "found: >400<" has an indention of 7
@@ -26,7 +27,11 @@ Private Function get_matcher_fail_msg(actual_value As String, expected_value As 
     value_indentation = Len(Trim("expected: " & expectation_suffix & " ") & " ")
     'start building the fail msg
     fail_msg = Space(4) & "failed expectation" & vbLf
-    fail_msg = fail_msg & Space(4) & "found:" & Space(value_indentation - Len("found:")) & ">" & actual_value & "<" & vbLf
+    If IsMissing(found_msg) Then
+        fail_msg = fail_msg & Space(4) & "found:" & Space(value_indentation - Len("found:")) & ">" & actual_value & "<" & vbLf
+    Else
+        fail_msg = fail_msg & Space(4) & found_msg & vbLf
+    End If
     If expectation_suffix = vbNullString Then
         fail_msg = fail_msg & Space(4) & "expected: " & ">" & expected_value & "<"
     Else
@@ -36,6 +41,23 @@ Private Function get_matcher_fail_msg(actual_value As String, expected_value As 
         fail_msg = fail_msg & vbLf & Space(4) & custom_err_msg
     End If
     get_matcher_fail_msg = fail_msg
+End Function
+
+Private Function get_validator_fail_msg(validation_result As String, Optional custom_err_msg) As String
+    'fail msg contains 2 lines: headline, validation result
+    Dim fail_msg As String
+    
+    If Not IsMissing(custom_err_msg) Then
+        custom_err_msg = Trim(CStr(custom_err_msg))
+    Else
+        custom_err_msg = vbNullString
+    End If
+    fail_msg = Space(4) & "failed expectation" & vbLf
+    fail_msg = fail_msg & Space(4) & validation_result
+    If custom_err_msg <> vbNullString Then
+        fail_msg = fail_msg & vbLf & Space(4) & custom_err_msg
+    End If
+    get_validator_fail_msg = fail_msg
 End Function
 
 Public Sub to_be(expected_value, Optional custom_err_msg)
@@ -56,37 +78,29 @@ Public Sub not_to_be(expected_value, Optional custom_err_msg)
     End If
 End Sub
 
-Public Sub to_be_nothing()
+Public Sub to_be_nothing(Optional custom_err_msg)
     Dim matcher_fail_msg As String
     
     If Not IsObject(Me.given_value) Then
-        matcher_fail_msg = vbTab & "expectation failed" & vbLf & _
-                                vbTab & "given value:" & vbTab & vbTab & ">" & Me.given_value & "<" & vbLf & _
-                                vbTab & "is not an object"
-            raise_expectation_err matcher_fail_msg
+        matcher_fail_msg = get_matcher_fail_msg(Me.given_value, "Nothing", vbNullString, custom_err_msg)
+        raise_expectation_err matcher_fail_msg
     Else
         If Not Me.given_value Is Nothing Then
-            matcher_fail_msg = vbTab & "missed expectation" & vbLf & _
-                                vbTab & "found an object" & vbLf & _
-                                vbTab & "expected:" & vbTab & ">Nothing<"
+            matcher_fail_msg = get_matcher_fail_msg(vbNullString, "Nothing", vbNullString, custom_err_msg, "found an object")
             raise_expectation_err matcher_fail_msg
         End If
     End If
 End Sub
 
-Public Sub not_to_be_nothing()
+Public Sub not_to_be_nothing(Optional custom_err_msg)
     Dim matcher_fail_msg As String
     
     If Not IsObject(Me.given_value) Then
-        matcher_fail_msg = vbTab & "expectation failed" & vbLf & _
-                                vbTab & "given value:" & vbTab & vbTab & ">" & Me.given_value & "<" & vbLf & _
-                                vbTab & "is not an object"
-            raise_expectation_err matcher_fail_msg
+        matcher_fail_msg = get_matcher_fail_msg(Me.given_value, "an object", vbNullString, custom_err_msg)
+        raise_expectation_err matcher_fail_msg
     Else
         If Me.given_value Is Nothing Then
-            matcher_fail_msg = vbTab & "missed expectation" & vbLf & _
-                                vbTab & "found nothing" & vbLf & _
-                                vbTab & "expected:" & vbTab & ">an object<"
+            matcher_fail_msg = get_matcher_fail_msg("Nothing", "an object", vbNullString, custom_err_msg)
             raise_expectation_err matcher_fail_msg
         End If
     End If
@@ -159,21 +173,13 @@ Public Sub contains_member(expected_member As Variant, Optional custom_err_msg)
             Else
                 expected_member_text = CStr(expected_member)
             End If
-            matcher_fail_msg = vbTab & "missed expectation" & vbLf & _
-                        vbTab & "collection does not contain item " & ">" & expected_member_text & "<"
-            If Not IsMissing(custom_err_msg) Then
-                matcher_fail_msg = matcher_fail_msg & vbLf & vbTab & custom_err_msg
-            End If
+            matcher_fail_msg = get_validator_fail_msg("collection does not contain item " & ">" & expected_member_text & "<", custom_err_msg)
             raise_expectation_err matcher_fail_msg
         End If
     ElseIf IsArray(Me.given_value) Then
         If Not ExtraVBA.array_has_value(expected_member, Me.given_value) Then
             expected_member_text = CStr(expected_member)
-            matcher_fail_msg = vbTab & "missed expectation" & vbLf & _
-                vbTab & "collection does not contain item " & ">" & expected_member_text & "<"
-            If Not IsMissing(custom_err_msg) Then
-                matcher_fail_msg = matcher_fail_msg & vbLf & vbTab & custom_err_msg
-            End If
+            matcher_fail_msg = get_validator_fail_msg("array does not contain item " & ">" & expected_member_text & "<", custom_err_msg)
             raise_expectation_err matcher_fail_msg
         End If
     End If
