@@ -11,7 +11,7 @@ Ability: assure expectations
     Example: compare integer type values with to_be comparison
       Given an expected value was defined as 200
         And the actual value was evaluated as 400
-       When expected and actual value are being compared using to_be
+       When expected and actual values are being compared using to_be
        Then the expectation fails
         And the expectation result is shown as
 					"""
@@ -23,7 +23,7 @@ Ability: assure expectations
     Example: compare integer type values with not_to_be comparison
       Given an expected value was defined as 200
         And the actual value was evaluated as 200
-       When expected and actual value are being compared using not_to_be
+       When expected and actual values are being compared using not_to_be
        Then the expectation fails
         And the expectation result is shown as
 					"""

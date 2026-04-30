@@ -14,27 +14,27 @@ Ability: add custom error message for failed expectations
       Given an expected value was defined as <expected_value>
         And the actual value was evaluated as <actual_value>
         And a custom error message was defined as <custom_error_message>
-       When expected and actual value are being compared using <comparison_type>
+       When expected and actual values are being compared using <expectation_function>
        Then <custom_error_message> is added to the expectation error message
 
       Examples:
-        | comparison_type | expected_value | actual_value | custom_error_message                   |
-        | to_be           |            200 |          400 | "cell doesn't have the expected width" |
-        | not_to_be       |            400 |          400 | "width is still set to default size"   |
+        | expectation_function | expected_value | actual_value | custom_error_message                   |
+        | to_be                |            200 |          400 | "cell doesn't have the expected width" |
+        | not_to_be            |            400 |          400 | "width is still set to default size"   |
 
 
     Example: text comparison expectations fail with custom error message
       Given an text was expected to include <expected_text>
         But the actual text was <actual_text>
         And a custom error message was defined as <custom_error_message>
-       When the text is compared using <comparison_type>
+       When the text is compared using <expectation_function>
        Then <custom_error_message> is added to the expectation error message
 
       Examples:
-        | comparison_type | expected_text  | actual_text                          | custom_error_message                                       |
-        | starts_with     |  "Error:"      | "Warning: address is out of bounds"  | "This kind of scenario must result in an error"            |
-        | ends_with       |  "200"         | "Web service returned status 404"    | "Calling the web service should return status 200"         |
-        | includes_text   |  "status"      | "Web service is not responding"      | "Calling the web service should return the current status" |
+        | expectation_function | expected_text  | actual_text                          | custom_error_message                                       |
+        | starts_with          |  "Error:"      | "Warning: address is out of bounds"  | "This kind of scenario must result in an error"            |
+        | ends_with            |  "200"         | "Web service returned status 404"    | "Calling the web service should return status 200"         |
+        | includes_text        |  "status"      | "Web service is not responding"      | "Calling the web service should return the current status" |
 
     @vba-specific
     Example: has_member expectation fails with custom error message

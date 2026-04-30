@@ -9,41 +9,39 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
+Public Sub Given_an_expected_value_was_defined_as_INT_AA730CC5F5BC(example_context As TContext, step_expressions As Collection)
+    'Given an expected value was defined as {integer}
+    example_context.set_value step_expressions(1), "expected_value"
+End Sub
+
+Public Sub Given_the_actual_value_was_evaluated_as_INT_C1726D898F77(example_context As TContext, step_expressions As Collection)
+    'And the actual value was evaluated as {integer}
+    example_context.set_value step_expressions(1), "actual_value"
+End Sub
+
 Public Sub Given_the_actual_value_refers_to_an_object_C17237078D18(example_context As TContext)
     'Given the actual value refers to an object
-    example_context.set_value New Collection, "actual_val"
+    example_context.set_value New Collection, "actual_value"
 End Sub
 
 Public Sub Given_the_actual_value_refers_to_nothing_F37725446C7A(example_context As TContext)
     'Given the actual value refers to Nothing
-    example_context.set_value Nothing, "actual_val"
+    example_context.set_value Nothing, "actual_value"
 End Sub
 
-Public Sub When_expected_and_actual_value_are_being_comp_04DEE404A552(example_context As TContext)
-    'When expected and actual value are being compared using to_be
+Public Sub When_expected_and_actual_values_are_being_com_04DE16907D42(example_context As TContext)
+    'When expected and actual values are being compared using to_be
     Dim actual_err_msg As String
-    Dim custom_err_msg As String
-    Dim expected_val As Variant
-    Dim actual_val As Variant
     
-    expected_val = example_context.get_value("expected_val")
-    actual_val = example_context.get_value("actual_val")
-    custom_err_msg = example_context.get_value("custom_err_msg")
-    actual_err_msg = run_comparison_expectation(actual_val, expected_val, custom_err_msg, "to_be", example_context)
+    actual_err_msg = run_comparison_expectation("to_be", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
-Public Sub When_expected_and_actual_value_are_being_comp_7F8492096565(example_context As TContext)
-    'When expected and actual value are being compared using not_to_be
+Public Sub When_expected_and_actual_values_are_being_com_84BE37220FDB(example_context As TContext)
+    'When expected and actual values are being compared using not_to_be
     Dim actual_err_msg As String
-    Dim custom_err_msg As String
-    Dim expected_val As Variant
-    Dim actual_val As Variant
     
-    expected_val = example_context.get_value("expected_val")
-    actual_val = example_context.get_value("actual_val")
-    custom_err_msg = example_context.get_value("custom_err_msg")
-    actual_err_msg = run_comparison_expectation(actual_val, expected_val, custom_err_msg, "not_to_be", example_context)
+    actual_err_msg = run_comparison_expectation("not_to_be", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
@@ -60,29 +58,29 @@ End Sub
 
 Public Sub When_the_actual_value_is_validated_using_to_b_CC83E48E0542(example_context As TContext)
     'When the actual value is validated using to_be_nothing
-    Dim actual_val As Variant
+    Dim actual_value As Variant
     Dim actual_err_msg As String
     
-    If IsObject(example_context.get_value("actual_val")) Then
-        Set actual_val = example_context.get_value("actual_val")
+    If IsObject(example_context.get_value("actual_value")) Then
+        Set actual_value = example_context.get_value("actual_value")
     Else
-        actual_val = example_context.get_value("actual_val")
+        actual_value = example_context.get_value("actual_value")
     End If
-    actual_err_msg = run_validation_expectation(actual_val, "to_be_nothing", example_context)
+    actual_err_msg = run_validation_expectation(actual_value, "to_be_nothing", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
 Public Sub When_the_actual_value_is_validated_using_not__8C8DAF193434(example_context As TContext)
     'When the actual value is validated using not_to_be_nothing
-    Dim actual_val As Variant
+    Dim actual_value As Variant
     Dim actual_err_msg As String
     
-    If IsObject(example_context.get_value("actual_val")) Then
-        Set actual_val = example_context.get_value("actual_val")
+    If IsObject(example_context.get_value("actual_value")) Then
+        Set actual_value = example_context.get_value("actual_value")
     Else
-        actual_val = example_context.get_value("actual_val")
+        actual_value = example_context.get_value("actual_value")
     End If
-    actual_err_msg = run_validation_expectation(actual_val, "not_to_be_nothing", example_context)
+    actual_err_msg = run_validation_expectation(actual_value, "not_to_be_nothing", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 

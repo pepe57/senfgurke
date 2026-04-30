@@ -9,16 +9,6 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
-Public Sub Given_an_expected_value_was_defined_as_INT_AA730CC5F5BC(example_context As TContext, step_expressions As Collection)
-    'Given an expected value was defined as {integer}
-    example_context.set_value step_expressions(1), "expected_val"
-End Sub
-
-Public Sub Given_the_actual_value_was_evaluated_as_INT_C1726D898F77(example_context As TContext, step_expressions As Collection)
-    'And the actual value was evaluated as {integer}
-    example_context.set_value step_expressions(1), "actual_val"
-End Sub
-
 Public Sub Given_a_custom_error_message_was_defined_as_S_05173C9D82CE(example_context As TContext, step_expressions As Collection)
     'And a custom error message was defined as {string}
     example_context.set_value step_expressions(1), "custom_err_msg"
@@ -73,7 +63,7 @@ Public Sub When_the_text_is_compared_using_starts_with_A93679E7575B(example_cont
     expected_text = example_context.get_value("expected_text")
     actual_text = example_context.get_value("actual_text")
     custom_err_msg = example_context.get_value("custom_err_msg")
-    actual_err_msg = run_comparison_expectation(actual_text, expected_text, custom_err_msg, "starts_with", example_context)
+    actual_err_msg = run_text_comparison_expectation(actual_text, expected_text, custom_err_msg, "starts_with", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
@@ -87,7 +77,7 @@ Public Sub When_the_text_is_compared_using_ends_with_F7C2E74C69E2(example_contex
     expected_text = example_context.get_value("expected_text")
     actual_text = example_context.get_value("actual_text")
     custom_err_msg = example_context.get_value("custom_err_msg")
-    actual_err_msg = run_comparison_expectation(actual_text, expected_text, custom_err_msg, "ends_with", example_context)
+    actual_err_msg = run_text_comparison_expectation(actual_text, expected_text, custom_err_msg, "ends_with", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 
@@ -101,7 +91,7 @@ Public Sub When_the_text_is_compared_using_includes_text_38E99F35B921(example_co
     expected_text = example_context.get_value("expected_text")
     actual_text = example_context.get_value("actual_text")
     custom_err_msg = example_context.get_value("custom_err_msg")
-    actual_err_msg = run_comparison_expectation(actual_text, expected_text, custom_err_msg, "includes_text", example_context)
+    actual_err_msg = run_text_comparison_expectation(actual_text, expected_text, custom_err_msg, "includes_text", example_context)
     example_context.set_value actual_err_msg, "actual_err_msg"
 End Sub
 

@@ -45,29 +45,66 @@ search_failed:
     Resume resume_after_failure
 End Function
 
-Public Function run_comparison_expectation(actual_value As Variant, expected_value As Variant, custom_err_msg As String, _
-                                            comparison_type As String, example_context As TContext) As String
+Public Function run_comparison_expectation(expectation_function As String, example_context As TContext, Optional comparison_type) As String
+    Dim actual_err_msg As String
+    Dim custom_err_msg As String
+    Dim expected_value As Variant
+    Dim actual_value As Variant
+    
+    If Not IsMissing(comparison_type) Then comparison_type = CStr(comparison_type)
+    If IsObject(example_context.get_value("expected_value")) Then
+        Set expected_value = example_context.get_value("expected_value")
+    Else
+        expected_value = example_context.get_value("expected_value")
+    End If
+    If IsObject(example_context.get_value("actual_value")) Then
+        Set actual_value = example_context.get_value("actual_value")
+    Else
+        actual_value = example_context.get_value("actual_value")
+    End If
+    custom_err_msg = example_context.get_value("custom_err_msg")
+
+    'set the actual err msg to a default value to recognice if the expectation under test caused no error at all
+    actual_err_msg = "Expected an error being raised by a missed expectation but none found so far..."
+    On Error GoTo comparison_failed
+    Select Case expectation_function
+        Case "to_be"
+            TSpec.expect(actual_value).to_be expected_value, custom_err_msg, comparison_type
+        Case "not_to_be"
+            TSpec.expect(actual_value).not_to_be expected_value, custom_err_msg, comparison_type
+    End Select
+    example_context.set_value "confirmed", "expectation_result"
+resume_after_failure:
+    On Error GoTo 0
+    run_comparison_expectation = actual_err_msg
+    Exit Function
+    
+comparison_failed:
+    actual_err_msg = get_failure_msg
+    example_context.set_value "failed", "expectation_result"
+    Err.Clear
+    Resume resume_after_failure
+End Function
+
+Public Function run_text_comparison_expectation(actual_value As Variant, expected_value As Variant, custom_err_msg As String, _
+                                            expectation_function As String, example_context As TContext) As String
     Dim actual_err_msg As String
     
     'set the actual err msg to a default value to recognice if the expectation under test caused no error at all
     actual_err_msg = "Expected an error being raised by a missed expectation but none found so far..."
     On Error GoTo comparison_failed
-    Select Case comparison_type
+    Select Case expectation_function
         Case "starts_with"
             TSpec.expect(actual_value).starts_with_text expected_value, custom_err_msg
         Case "ends_with"
             TSpec.expect(actual_value).ends_with_text expected_value, custom_err_msg
         Case "includes_text"
             TSpec.expect(actual_value).includes_text expected_value, custom_err_msg
-        Case "to_be"
-            TSpec.expect(actual_value).to_be expected_value, custom_err_msg
-        Case "not_to_be"
-            TSpec.expect(actual_value).not_to_be expected_value, custom_err_msg
     End Select
     example_context.set_value "confirmed", "expectation_result"
 resume_after_failure:
     On Error GoTo 0
-    run_comparison_expectation = actual_err_msg
+    run_text_comparison_expectation = actual_err_msg
     Exit Function
     
 comparison_failed:

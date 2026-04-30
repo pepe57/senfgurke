@@ -27,7 +27,7 @@ Public Function get_step_definition_classes() As Variant
                                          New Steps_run_tests, _
                                          New Steps_save_vars_in_context, _
                                          New Steps_show_step_template, _
-                                         New Steps_support_functions, _
+                                         New Steps_support_functions, New Steps_assure_numeric_expecta, _
                                          New Steps_assure_expectations, New Steps_custom_err_msg_expectatio _
                                         )
 End Function

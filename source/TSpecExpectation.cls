@@ -60,19 +60,37 @@ Private Function get_validator_fail_msg(validation_result As String, Optional cu
     get_validator_fail_msg = fail_msg
 End Function
 
-Public Sub to_be(expected_value, Optional custom_err_msg)
+Public Sub to_be(expected_value, Optional custom_err_msg, Optional comparison_type)
     Dim matcher_fail_msg As String
+    Dim comparison_result As Boolean
     
-    If Not values_are_equal(Me.given_value, expected_value) Then
+    If IsMissing(comparison_type) Then
+        comparison_type = "="
+    Else
+        comparison_type = CStr(comparison_type)
+    End If
+    comparison_result = compare_values(Me.given_value, expected_value, comparison_type)
+    
+    If comparison_result = False Then
+'    If Not values_are_equal(Me.given_value, expected_value) Then
         matcher_fail_msg = get_matcher_fail_msg(Me.given_value, CStr(expected_value), vbNullString, custom_err_msg)
         raise_expectation_err matcher_fail_msg
     End If
 End Sub
 
-Public Sub not_to_be(expected_value, Optional custom_err_msg)
+Public Sub not_to_be(expected_value, Optional custom_err_msg, Optional comparison_type)
     Dim matcher_fail_msg As String
+    Dim comparison_result As Boolean
     
-    If values_are_equal(Me.given_value, expected_value) Then
+    If IsMissing(comparison_type) Then
+        comparison_type = "="
+    Else
+        comparison_type = CStr(comparison_type)
+    End If
+    comparison_result = compare_values(Me.given_value, expected_value, comparison_type)
+    
+    If comparison_result = True Then
+'    If values_are_equal(Me.given_value, expected_value) Then
         matcher_fail_msg = get_matcher_fail_msg(Me.given_value, CStr(expected_value), "not", custom_err_msg)
         raise_expectation_err matcher_fail_msg
     End If
@@ -109,18 +127,50 @@ End Sub
 Private Sub test_comparability(pGivenValue As Variant, pExpectedValue As Variant)
     Dim matcher_fail_msg As String
     
-    If (IsObject(Me.given_value) And Not IsObject(pExpectedValue)) _
-     Or (IsObject(pExpectedValue) And Not IsObject(Me.given_value)) Then
+    ' can't compare objects with primitive data
+    If (IsObject(pGivenValue) And Not IsObject(pExpectedValue)) _
+     Or (IsObject(pExpectedValue) And Not IsObject(pGivenValue)) Then
         matcher_fail_msg = vbTab & "can't compare given with expected value - check if only one of them is an object"
+        raise_expectation_err matcher_fail_msg
+    End If
+    ' can't compare numeric values with non-numeric values
+    If IsNumeric(pGivenValue) <> IsNumeric(pExpectedValue) Then
+        matcher_fail_msg = vbTab & "value types >" & TypeName(pGivenValue) & "< and >" & TypeName(pExpectedValue) & _
+                            "< for actual and given value are incompatible for comparison"
+        raise_expectation_err matcher_fail_msg
+    End If
+    ' can't compare arrays with any other data type including arrays
+    If IsArray(pGivenValue) Or IsArray(pExpectedValue) Then
+        matcher_fail_msg = vbTab & "value comparison can't handle arrays"
         raise_expectation_err matcher_fail_msg
     End If
 End Sub
 
+Private Function compare_values(actual_value As Variant, expected_value As Variant, Optional comparison_type) As Boolean
+    If IsMissing(comparison_type) Then
+        comparison_type = "="
+    Else
+        comparison_type = CStr(comparison_type)
+    End If
+    'only data types of the same kind are comparable
+    test_comparability actual_value, expected_value
+    Select Case comparison_type
+        Case "="
+            'different data types are compared in different ways
+            compare_values = values_are_equal(actual_value, expected_value)
+        Case ">"
+            compare_values = actual_value > expected_value
+        Case ">="
+            compare_values = actual_value >= expected_value
+        Case "<"
+            compare_values = actual_value < expected_value
+        Case "<="
+            compare_values = actual_value <= expected_value
+    End Select
+End Function
+
 Private Function values_are_equal(given_value As Variant, expected_value As Variant) As Boolean
     Dim index As Integer
-    
-    'basic data types (e.g. string, integer) can't be compared with objects
-    test_comparability given_value, expected_value
     
     values_are_equal = True
     If IsObject(given_value) Then
